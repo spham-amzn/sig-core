@@ -39,7 +39,7 @@ O3DE cannot work without the help and input from as many of its community member
 
 ## Helpful information
 
-* SIG Chair: geds-dm [Amazon, [@lumberyard-employee-dm](https://github.com/lumberyard-employee-dm)], Co-chair: Currently Empty
+* SIG Chair: spham-amzn [[@spham-amzn](https://github.com/spham-amzn)], Co-chair: nick-l-o3de [(@nick-l-o3de)[https://github.com/nick-l-o3de]]
 * [SIG-Core Charter](governance/SIG%20Core%20Charter.md)
 * [Open Issues](issues?q=is%3Aissue+is%3Aopen+label%3Amtg-agenda)
 * [Full table of previous meetings](meetings?id=previous-meetings) is available here.
