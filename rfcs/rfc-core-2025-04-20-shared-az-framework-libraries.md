@@ -211,8 +211,46 @@ The only way to solve this linker error outside of resorting to the [FORCE:Multi
 #### AZ_DISABLE_COPY
 When some of the classes where switched to a module-exported class, the compiler error `attempting to reference a deleted function" for a unique_ptr` would appear. This is generally caused by a class that uses a `unique_ptr` to another class that defines a copy & move constructor.  These errors do not show up when compiling a static library because they are not exposed unless the module that uses them actually attempts to a `std::move` on that class. They appear in shared libraries because nothing is dead-stripped (see https://devblogs.microsoft.com/oldnewthing/20190927-00/?p=102932 for an explaination).  This error is solved by prevent unique pointers from trying to 'copy' each other by deleting the default copy and assignment operators. On some compilers, this rule extends to any subclasses that have their copy constructors/operators deleted.  This is done by using the `AZ_DISABLE_COPY` and `AZ_DISABLE_COPY_MOVE` macros that explicitly deletes them.
 
+
+
+#### API Externalizing CVARS
+
+If a CVAR is declared in a shared library, and wants to be exported for use outside of the library, the `AZ_CVAR_API_EXTERNED` replaces `AZ_CVAR_EXTERNED`. The macro takes in an additional `API` macro based on the shared framework library in which it is declared. 
+
+For example, `ed_useNewAssetBrowserListView` is declared in AzToolsFramework
+
+```
+AZ_CVAR_API(AZTF_API, bool, ed_useNewAssetBrowserListView, true, nullptr, AZ::ConsoleFunctorFlags::Null,
+        "Use the new AssetBrowser ListView for searching assets.");
+```
+
+To access it outside of the module, it would be declared using the `AZTF_API` macro:
+
+```
+AZ_CVAR_API_EXTERNED_API(AZTF_API, bool, ed_useNewAssetBrowserListView);
+```
+
+
+#### Constants moved from AZ::SettingsRegistryInterface to AZ::SettingsRegistryConstants
+Constants that were in `AZ::SettingsRegistryInterface` were moved to `AZ::SettingsRegistryConstants`, e.g. 
+
+```
+AZ::SettingsRegistryInterface::RegistryFolder -> AZ::SettingsRegistryConstants::RegistryFolder
+AZ::SettingsRegistryInterface::DevUserRegistryFolder -> AZ::SettingsRegistryConstants::DevUserRegistryFolder
+```
+
+#### Move global variables to global accessors
+The `AzToolsFramework::g_mainManipulatorManagerId` was moved to a global accessor method `AzToolsFramework::GetMainManipulatorManagerId()`
+
+#### GetCurrentSerializeContextModule renamed to GetGlobalSerializeContextModule
+
+`AZ::GetCurrentSerializeContextModule()` was renamed to `AZ::GetGlobalSerializeContextModule()` to provide an updated description of its new role.
+
+
 ## How will be change be integrated
 The scope of this change is large and cannot be done incrementally. This change will first reside in a long lived feature branch called `shared_framework_libraries` that will be parallel to the development branch of O3DE. There will be incremental pull requests into this feature branch for the purpose of creating pull requests that will be based on the different category of changes needed. The branch itself will not be compilable until all the initial pull requests are approved and merged in. At that point, it will stay on this branch until a later TBD date to allow for testing. The branch will be periodically kept up to date with the main development branch.
+
+
 
 ## FAQ
 
